@@ -18,18 +18,6 @@ for i,v in pairs(modules) do
 	end
 end
 
---strategy that you jump (when you can run away in a straight line) while opponent's lunge is down
-
---strategy that you walk around the opponent while running away
-
---don't go after the left side if the opponent is hugging the wall
---don't spam hit while not in range (gives opportunity for enemy to attack while lunge is down)
---make it go closer when the opponent's attack is on cooldown
---realize that once it's being attacked, if the opponent is plays optimally it can't dodge so try maneuvers while attacking
---make it not attempt to back off when it's already being hit
---back off when lunging Almost over and down
-
---detecting when enemy is about to lunge doesn't work
 
 
 
@@ -130,9 +118,9 @@ return function(Model, isPlayer, teamCheck, targetTeam)
 			local MoveDirection = ClosestEnemy.Humanoid.MoveDirection
 			local EnemyIsMovingTowardsModel = (EnemyToModelVector - MoveDirection).Magnitude < 1
 			--goes really aggresive when enemy is on cooldown
-			local IdealDistance = EnemyExtended and 7 or 6.5 --8 7
+			local IdealDistance = EnemyExtended and 8 or 7 --8 7
 			--backs off
-			IdealDistance += EnemyIsMovingTowardsModel and 1.5 or 0 --2 0
+			IdealDistance += EnemyIsMovingTowardsModel and 2 or 0 --2 0
 			
 			
 			--detects when last lunged
@@ -144,7 +132,7 @@ return function(Model, isPlayer, teamCheck, targetTeam)
 			
 			--pushes when enemy is about to run out of lunge (hopefully)
 			if EnemyTool and not EnemyTool.Enabled and (Tick - LastOpponentAttack > 0.1) and not (Tick - LastOpponentAttack < 0.2) and  (Tick - LastAttack > 0.05) then 
-				IdealDistance -= 1.5 -- 2
+				IdealDistance -= 2 -- 2
 			end
 			
 			--LungingGui.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -152,11 +140,11 @@ return function(Model, isPlayer, teamCheck, targetTeam)
 			if (Tick - LastAttack > 0.5) then
 				--LungingGui.BackgroundColor3 = Color3.new(0.0470588, 1, 0) 
 				
-				IdealDistance += 1.5 -- 2
+				IdealDistance += 2 -- 2
 			end
 
 			
-			if XDist < 13.5 then --15
+			if XDist < 15 then --15
 				Tool:Activate()
 			end
 
@@ -177,7 +165,7 @@ return function(Model, isPlayer, teamCheck, targetTeam)
 
 			if HigherHp and SameHeight then 
 				Offset*= 3
-				IdealDistance = 1.5 -- 2
+				IdealDistance = 2 -- 2
 			end
 			
 			if SideCast or Tool.Grip == Grips.Up then 
