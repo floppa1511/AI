@@ -4,7 +4,7 @@ _G.AI_Enabled = true
 
 local Funcs = {}
 local modules = {
-	{'https://raw.githubusercontent.com/floppa1511/AI/_/Angles?token=GHSAT0AAAAAACVLYONTYI2XQZTOVQ6HNVHCZVHWYHA', "GetAngle"}, 
+	{'https://raw.githubusercontent.com/floppa1511/AI/_/Angles?token=GHSAT0AAAAAACVLYONTYI2XQZTOVQ6HNVHCZVHWYHA', "FindBestAngle"}, 
 	{'https://raw.githubusercontent.com/floppa1511/AI/_/Functions?token=GHSAT0AAAAAACVLYONTB4ODRWZNH3TXH7ZWZVHWXVQ', nil}
 }
 for i,v in pairs(modules) do 
