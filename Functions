@@ -1,1 +1,124 @@
-local a={}local function b()local c={}for d,e in game.Players:GetChildren()do if e.Character then table.insert(c,e.Character)end end;return c end;a.VisualizePosition=function(f)local g=Instance.new("Part")g.Position=f;g.CanCollide=false;g.Parent=workspace.Filter;g.Size=Vector3.new(0.1,0.1,0.1)g.Anchored=true end;a.GetDist=function(h,f)return(h["Right Arm"].Position-f).Magnitude end;a.GetClosestEnemy=function(h)local i=nil;local j=math.huge;for d,e in pairs(game.Players:GetChildren())do if e.Name~=h.Name and e.Character and e.Team~=game.Players[h.Name].Team then local k=(e.Character.PrimaryPart.Position-h.PrimaryPart.Position).Magnitude;if k<j then j=k;i=e.Character end end end;return i end;a.GetDistance=function(h,l)return(h.PrimaryPart.Position-l.PrimaryPart.Position).Magnitude end;a.GetClosestPart=function(f,l)local m=nil;local j=math.huge;for d,e in pairs(l:GetChildren())do if e:IsA("BasePart")then local n=Vector3.new(0,0,0)if e.Name=="Right Arm"then n=l.PrimaryPart.CFrame.LookVector*3 end;local k=(f-(e.Position+n)).Magnitude;if k<j then j=k;m=e end end end;return m end;a.GetRetreatDirection=function(h,i,k)local o=h.PrimaryPart.Position-i.PrimaryPart.Position;local p=RaycastParams.new()p.FilterType=Enum.RaycastFilterType.Blacklist;p.FilterDescendantsInstances=b()local q=-135;local r=0;local s=nil;local t=10;for d=1,t do local u=workspace:Raycast(h.PrimaryPart.Position,(CFrame.lookAt(h.PrimaryPart.Position,h.PrimaryPart.Position+o)*CFrame.Angles(0,math.rad(q),0)).LookVector*k,p)if u then local k=(u.Position-i.PrimaryPart.Position).Magnitude;if k>r then s=u.Position;r=k end end;q+=270/t end;return s end;a.SideCast=function(i)local p=RaycastParams.new()p.FilterType=Enum.RaycastFilterType.Blacklist;p.FilterDescendantsInstances=b()local q=0;local r=0;local s=nil;local t=10;for d=1,t do local u=workspace:Raycast(i.PrimaryPart.Position,(i.PrimaryPart.CFrame*CFrame.Angles(0,math.rad(q),0)).LookVector*8,p)q+=360/t;if u then return u end end end;return a
+local Funcs = {}
+
+local function getPlayerCharacters()
+	local t = {}
+	for i,v in game.Players:GetChildren() do
+		if v.Character then
+			table.insert(t, v.Character)
+		end
+	end
+	return t
+end
+Funcs.VisualizePosition = function(Position)
+	local Part = Instance.new("Part")
+	Part.Position = Position
+	Part.CanCollide = false
+	Part.Parent = workspace.Filter
+	Part.Size = Vector3.new(0.1,0.1,0.1)
+	Part.Anchored = true
+end
+
+Funcs.GetDist = function(Model, Position)
+	return (Model["Right Arm"].Position - Position).Magnitude
+end
+
+
+Funcs.GetClosestEnemy = function(Model, teamCheck)
+	local ClosestEnemy = nil
+	local ClosestDistance = math.huge
+	for i, v in pairs(game.Players:GetChildren()) do 
+		local character = v.Character
+		if character then
+			local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+			if humanoid and humanoid.Health > 0 then
+				if v.Name ~= Model.Name and (v.Team ~= game.Players[Model.Name].Team or not teamCheck) and v.Character.PrimaryPart then
+					local Dist = (v.Character.PrimaryPart.Position - Model.PrimaryPart.Position).Magnitude
+					if Dist < ClosestDistance and not v.Character:FindFirstChildOfClass("ForceField") then
+						ClosestDistance = Dist
+						ClosestEnemy = v.Character
+					end
+				end
+			end
+		end
+	end
+	
+	
+	return ClosestEnemy
+end
+
+Funcs.GetDistance = function (Model, OtherModel)
+	return (Model.PrimaryPart.Position - OtherModel.PrimaryPart.Position).Magnitude
+end
+
+Funcs.GetClosestPart = function(Position, OtherModel)
+	local ClosestPart = nil
+	local ClosestDistance = math.huge
+	for i,v in pairs(OtherModel:GetChildren()) do 
+		if v:IsA("BasePart") then 
+			local Offset = Vector3.new(0,0,0)
+			if v.Name == "Right Arm" then 
+				
+				Offset = OtherModel.PrimaryPart.CFrame.LookVector*3
+			end
+			
+			local Dist = (Position - (v.Position+Offset)).Magnitude
+			if Dist < ClosestDistance then
+				ClosestDistance = Dist
+				ClosestPart = v
+			end
+		end
+	end
+	 
+	return ClosestPart
+end
+
+Funcs.GetRetreatDirection = function(Model, ClosestEnemy, Dist)
+	local Difference = (Model.PrimaryPart.Position - ClosestEnemy.PrimaryPart.Position)
+	local Params = RaycastParams.new()
+	Params.FilterType = Enum.RaycastFilterType.Blacklist
+	Params.FilterDescendantsInstances = getPlayerCharacters()
+	-- must be 10 for now otherwise it might run towards the player
+	-- maybe increase to 100 when the closest hit is <10? that way it knows when it's getting cornered
+	--local Dist = 10 
+	local Angle = -135
+	local BestDist = 0
+	local BestPosition = nil
+	local Raycasts = 10
+	for i = 1, Raycasts do
+		local Raycast = workspace:Raycast(Model.PrimaryPart.Position, (CFrame.lookAt(Model.PrimaryPart.Position, Model.PrimaryPart.Position + Difference)*CFrame.Angles(0,math.rad(Angle),0)).LookVector*Dist, Params)
+		
+		if Raycast then 
+			local Dist = (Raycast.Position - ClosestEnemy.PrimaryPart.Position).Magnitude
+			if Dist > BestDist then 
+				BestPosition = Raycast.Position
+				BestDist = Dist
+			end
+		end
+		
+		Angle += 270/Raycasts
+		
+	end
+	
+	return BestPosition
+end
+
+Funcs.SideCast = function(ClosestEnemy)
+	local Params = RaycastParams.new()
+	Params.FilterType = Enum.RaycastFilterType.Blacklist
+	Params.FilterDescendantsInstances = getPlayerCharacters()
+	local Angle = 0
+	local BestDist = 0
+	local BestPosition = nil
+	local Raycasts = 10
+	for i = 1,Raycasts do 
+		local Raycast = workspace:Raycast(ClosestEnemy.PrimaryPart.Position, (ClosestEnemy.PrimaryPart.CFrame * CFrame.Angles(0,math.rad(Angle),0)).LookVector*8, Params)
+		Angle += 360/Raycasts
+		if Raycast then 
+			return Raycast
+		end
+	end
+	
+
+end
+
+return Funcs
