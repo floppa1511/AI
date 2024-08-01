@@ -1,5 +1,3 @@
---SIGFMSAS
----SKIBIDI, SKIBIDIII
 _G.AI_Enabled = true
 
 local Funcs = {}
@@ -36,6 +34,46 @@ Grips = {
 }
 
 --local LungingGui = game.Players.LocalPlayer.PlayerGui:WaitForChild("Game").Lunging
+
+game:GetService("RunService").RenderStepped:Connect(function()
+
+	if Enabled then
+
+		spawn(function()
+
+			local tool = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Tool")
+			if tool and tool:FindFirstChild("Handle") and tool.Grip == Grips.Out then
+
+				local p = game.Players:GetPlayers()
+				for i = 2, #p do local v = p[i].Character
+					if v and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") and (localPlayer:DistanceFromCharacter(v.HumanoidRootPart.Position) <= Reach) then
+						for i = 0,2 do
+							firetouchinterest(tool.Handle,v["Left Arm"],0)
+							firetouchinterest(tool.Handle,v["Left Arm"],1)
+							firetouchinterest(tool.Handle,v["Right Arm"],0)
+							firetouchinterest(tool.Handle,v["Right Arm"],1)
+							firetouchinterest(tool.Handle,v.Torso,0)
+							firetouchinterest(tool.Handle,v.Torso,1)
+							firetouchinterest(tool.Handle,v.HumanoidRootPart,0)
+							firetouchinterest(tool.Handle,v.HumanoidRootPart,1)
+						end
+					end
+				end
+			end
+		end)
+	end
+end)
+--local currentCamera = game:GetService("Workspace").CurrentCamera
+--local mouse = localPlayer:GetMouse()
+local uis = game:GetService("UserInputService")
+
+uis.InputBegan:Connect(function(input, gameProcessedEvent)
+	if gameProcessedEvent then return end
+	if input.KeyCode == Enum.KeyCode.X then
+		print("Hi",Enabled)
+		Enabled = not Enabled
+	end
+end)
 
 
 return function(Model, isPlayer, teamCheck, targetTeam)
