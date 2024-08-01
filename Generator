@@ -67,15 +67,7 @@ end)
 --local mouse = localPlayer:GetMouse()
 local uis = game:GetService("UserInputService")
 
-uis.InputBegan:Connect(function(input, gameProcessedEvent)
-	if gameProcessedEvent then return end
-	if input.KeyCode == Enum.KeyCode.X then
-		_G.AI_Enabled = not _G.AI_Enabled
-	end
-end)
-
-
-return function(Model, isPlayer, teamCheck, targetTeam)
+function AI(Model, isPlayer, teamCheck, targetTeam)
 	local Humanoid = Model.Humanoid
 	local PrimaryPart = Model.PrimaryPart
 	local Tool = Model:FindFirstChildOfClass("Tool")
@@ -86,8 +78,7 @@ return function(Model, isPlayer, teamCheck, targetTeam)
 	local LastAttack = 0
 	local LastOpponentAttack = 0
 	local EnemyExtended = false
-	while Model.PrimaryPart and Humanoid and Humanoid.Health > 0 and Model.Parent == workspace do  
-		if not _G.AI_Enabled then continue end
+	while Model.PrimaryPart and Humanoid and Humanoid.Health > 0 and Model.Parent == workspace and _G.AI_Enabled do
 		Tick += game:GetService("RunService").RenderStepped:Wait()
 		local ClosestEnemy = Funcs.GetClosestEnemy(Model, teamCheck)
 		
@@ -235,3 +226,10 @@ return function(Model, isPlayer, teamCheck, targetTeam)
 		end
 	end
 end
+
+uis.InputBegan:Connect(function(input, gameProcessedEvent)
+	if gameProcessedEvent then return end
+	if input.KeyCode == Enum.KeyCode.X then
+		AI(game.Players.LocalPlayer.Character, true, false)
+	end
+end)
