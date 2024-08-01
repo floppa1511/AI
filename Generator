@@ -232,5 +232,6 @@ uis.InputBegan:Connect(function(input, gameProcessedEvent)
 	if gameProcessedEvent then return end
 	if input.KeyCode == Enum.KeyCode.X then
 		_G.AI_Enabled = not _G.AI_Enabled
+		AI(game.Players.LocalPlayer.Character, true, false)
 	end
 end)
