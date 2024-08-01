@@ -37,7 +37,7 @@ Grips = {
 
 game:GetService("RunService").RenderStepped:Connect(function()
 
-	if Enabled then
+	if _G.AI_Enabled then
 
 		spawn(function()
 
@@ -70,8 +70,7 @@ local uis = game:GetService("UserInputService")
 uis.InputBegan:Connect(function(input, gameProcessedEvent)
 	if gameProcessedEvent then return end
 	if input.KeyCode == Enum.KeyCode.X then
-		print("Hi",Enabled)
-		Enabled = not Enabled
+		_G.AI_Enabled = not _G.AI_Enabled
 	end
 end)
 
@@ -87,7 +86,8 @@ return function(Model, isPlayer, teamCheck, targetTeam)
 	local LastAttack = 0
 	local LastOpponentAttack = 0
 	local EnemyExtended = false
-	while Model.PrimaryPart and Humanoid and Humanoid.Health > 0 and Model.Parent == workspace and _G.AI_Enabled do  
+	while Model.PrimaryPart and Humanoid and Humanoid.Health > 0 and Model.Parent == workspace do  
+		if not _G.AI_Enabled then continue end
 		Tick += game:GetService("RunService").RenderStepped:Wait()
 		local ClosestEnemy = Funcs.GetClosestEnemy(Model, teamCheck)
 		
