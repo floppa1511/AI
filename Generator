@@ -46,7 +46,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
 
 				local p = game.Players:GetPlayers()
 				for i = 2, #p do local v = p[i].Character
-					if v and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") and (localPlayer:DistanceFromCharacter(v.HumanoidRootPart.Position) <= Reach) then
+					if v and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") and (localPlayer:DistanceFromCharacter(v.HumanoidRootPart.Position) <= 2.8) then
 						for i = 0,2 do
 							firetouchinterest(tool.Handle,v["Left Arm"],0)
 							firetouchinterest(tool.Handle,v["Left Arm"],1)
